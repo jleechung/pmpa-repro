@@ -132,3 +132,26 @@ answers → `claude --print` reaches it → agent executes a skill through Bash 
 tesseract OCR → `openclaw agent --local` answers → one ISR session per harness
 produces a `metric_summary.json`. The OpenClaw leg is non-fatal so a failure
 there cannot mask a Claude Code pass.
+
+## 2026-11-03 — native-image without OCR skill and modality diagnostic fix
+
+| Run | Content | Result |
+|---|---|---|
+| native-image, skill removed (`pmpa-natimg-noskill-qwen3.8-27b`) | Qwen3.8-27B Claude Code png, 4 scenarios (120 sessions) | COMPLETED 00:25:43. Reused the per-model sandbox after deleting `image-reader` and `pdf-reader`. |
+
+Changes in this session:
+
+1. `bin/diagnose-modality.py` treated native `Read` calls on `.png` files as
+   `no_payload` because the PNG bytes are base64-encoded in the transcript. It
+   now counts `Read` on `/\d+\.png$` (except the truncated 2-page `14.png`) as
+   payload arrival, matches paraphrased refusals, and checks `summary.json` for
+   `isr_inserted`.
+2. The skill-removed native-image run deletes
+   `.claude/skills/{image-reader,pdf-reader}` and
+   `skills/{image-reader,pdf-reader}` from `w0..w3` and writes to
+   `$PMPA_RUNS/pmpa-natimg-noskill-${PMPA_SERVED_MODEL}`.
+3. `SUMMARY.md` and `experiments/qwen35-main/results.md` record the
+   `pmpa-natimg-noskill-qwen3.8-27b` results, the updated
+   `bin/diagnose-modality.py` breakdown, the mid-turn self-remediation in
+   `form/sample_30_run_1` (`29.png`), and the `14.png` page-0 truncation bug in
+   `repo/jobscripts/data_preprosess.py:439-444`.
