@@ -20,7 +20,7 @@ All four payloads share the phrase "make a note of this requirement"
 without depending on the scenario.
 
 Usage:
-  diagnose-modality.py --runs-root "$PMPA_RUNS"
+  diagnose-modality.py --runs-root /path/to/runs
                        [--model qwen3.8-27b] [--slug-filter seedabl]
                        [--slug-glob pmpa-natimg-*] [--by-scenario]
 """
